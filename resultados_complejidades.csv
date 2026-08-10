@@ -1,0 +1,46 @@
+Complejidad,Algoritmo,n,Operaciones medidas,Formula esperada,Operacion/formula
+O(lg n),Division sucesiva entre 2,2,1,1,1.00
+O(lg n),Division sucesiva entre 2,4,2,2,1.00
+O(lg n),Division sucesiva entre 2,8,3,3,1.00
+O(lg n),Division sucesiva entre 2,16,4,4,1.00
+O(lg n),Division sucesiva entre 2,32,5,5,1.00
+O(lg n),Division sucesiva entre 2,64,6,6,1.00
+O(lg n),Division sucesiva entre 2,128,7,7,1.00
+O(n),Recorrido simple,10,10,10,1.00
+O(n),Recorrido simple,100,100,100,1.00
+O(n),Recorrido simple,1000,1000,1000,1.00
+O(n),Recorrido simple,5000,5000,5000,1.00
+O(n),Recorrido simple,10000,10000,10000,1.00
+O(n lg n),n busquedas binarias simuladas,8,24,24,1.00
+O(n lg n),n busquedas binarias simuladas,16,64,64,1.00
+O(n lg n),n busquedas binarias simuladas,32,160,160,1.00
+O(n lg n),n busquedas binarias simuladas,64,384,384,1.00
+O(n lg n),n busquedas binarias simuladas,128,896,896,1.00
+O(n lg n),n busquedas binarias simuladas,256,2048,2048,1.00
+O(n^2),Pares ordenados,10,100,100,1.00
+O(n^2),Pares ordenados,20,400,400,1.00
+O(n^2),Pares ordenados,50,2500,2500,1.00
+O(n^2),Pares ordenados,100,10000,10000,1.00
+O(n^2),Pares ordenados,200,40000,40000,1.00
+O(n^3),Matriz tridimensional,5,125,125,1.00
+O(n^3),Matriz tridimensional,10,1000,1000,1.00
+O(n^3),Matriz tridimensional,20,8000,8000,1.00
+O(n^3),Matriz tridimensional,30,27000,27000,1.00
+O(n^3),Matriz tridimensional,40,64000,64000,1.00
+O(n^10),Tuplas de longitud 10,1,1,1,1.00
+O(n^10),Tuplas de longitud 10,2,1024,1024,1.00
+O(n^10),Tuplas de longitud 10,3,59049,59049,1.00
+O(n^10),Tuplas de longitud 10,4,1048576,1048576,1.00
+O(n!),Permutaciones,1,1,1,1.00
+O(n!),Permutaciones,2,2,2,1.00
+O(n!),Permutaciones,3,6,6,1.00
+O(n!),Permutaciones,4,24,24,1.00
+O(n!),Permutaciones,5,120,120,1.00
+O(n!),Permutaciones,6,720,720,1.00
+O(n!),Permutaciones,7,5040,5040,1.00
+O(n!),Permutaciones,8,40320,40320,1.00
+O(2^n),Subconjuntos,4,16,16,1.00
+O(2^n),Subconjuntos,8,256,256,1.00
+O(2^n),Subconjuntos,12,4096,4096,1.00
+O(2^n),Subconjuntos,16,65536,65536,1.00
+O(2^n),Subconjuntos,20,1048576,1048576,1.00
