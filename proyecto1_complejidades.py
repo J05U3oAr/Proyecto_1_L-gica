@@ -1,5 +1,18 @@
 from __future__ import annotations
 
+"""Proyecto 1: conteo de operaciones para comparar complejidades.
+
+Este programa ejecuta varios algoritmos pequenos, cada uno disenado para
+representar una complejidad distinta. En vez de medir tiempo de ejecucion,
+cuenta cuantas operaciones realiza cada algoritmo y compara ese conteo con
+una formula matematica esperada.
+
+Salidas principales al ejecutar el archivo:
+- Imprime una tabla en consola.
+- Genera un CSV con los resultados, si no se usa --no-guardar.
+- Genera un TXT con la misma tabla de consola, si no se usa --no-guardar.
+"""
+
 import argparse
 import csv
 import math
@@ -15,6 +28,16 @@ ReferenceFormula = Callable[[int], int]
 
 @dataclass(frozen=True)
 class Experiment:
+    """Representa un experimento de complejidad.
+
+    Attributes:
+        complexity: Texto de la complejidad analizada, por ejemplo "O(n^2)".
+        name: Nombre del algoritmo representativo.
+        values: Valores de entrada n que se probaran.
+        algorithm: Funcion que recibe n y devuelve operaciones medidas.
+        reference: Formula que recibe n y devuelve el valor teorico esperado.
+    """
+
     complexity: str
     name: str
     values: tuple[int, ...]
@@ -23,7 +46,17 @@ class Experiment:
 
 
 def algorithm_logarithmic(n: int) -> int:
-    """O(lg n): divide el problema entre 2 en cada iteracion."""
+    """Cuenta operaciones de un algoritmo O(lg n).
+
+    El valor n se divide entre 2 en cada iteracion hasta llegar a 1.
+
+    Args:
+        n: Tamano de la entrada.
+
+    Returns:
+        Cantidad de divisiones realizadas. Para potencias de 2, devuelve lg(n).
+    """
+
     operations = 0
     while n > 1:
         n //= 2
@@ -32,7 +65,17 @@ def algorithm_logarithmic(n: int) -> int:
 
 
 def algorithm_linear(n: int) -> int:
-    """O(n): recorre n elementos una sola vez."""
+    """Cuenta operaciones de un algoritmo O(n).
+
+    Simula un recorrido simple donde se visita cada elemento una vez.
+
+    Args:
+        n: Tamano de la entrada.
+
+    Returns:
+        Cantidad de iteraciones realizadas, que corresponde a n.
+    """
+
     operations = 0
     for _ in range(n):
         operations += 1
@@ -40,7 +83,19 @@ def algorithm_linear(n: int) -> int:
 
 
 def algorithm_n_log_n(n: int) -> int:
-    """O(n lg n): por cada elemento hace una busqueda binaria simulada."""
+    """Cuenta operaciones de un algoritmo O(n lg n).
+
+    Por cada uno de los n elementos, simula una busqueda binaria que divide
+    el tamano del problema entre 2.
+
+    Args:
+        n: Tamano de la entrada.
+
+    Returns:
+        Cantidad total de divisiones simuladas, igual a n * lg(n) para las
+        potencias de 2 usadas en los experimentos.
+    """
+
     operations = 0
     for _ in range(n):
         size = n
@@ -51,7 +106,18 @@ def algorithm_n_log_n(n: int) -> int:
 
 
 def algorithm_quadratic(n: int) -> int:
-    """O(n^2): compara todos los pares ordenados."""
+    """Cuenta operaciones de un algoritmo O(n^2).
+
+    Usa dos ciclos anidados para representar la revision de todos los pares
+    ordenados posibles.
+
+    Args:
+        n: Tamano de la entrada.
+
+    Returns:
+        Cantidad de pares visitados, igual a n^2.
+    """
+
     operations = 0
     for _ in range(n):
         for _ in range(n):
@@ -60,7 +126,18 @@ def algorithm_quadratic(n: int) -> int:
 
 
 def algorithm_cubic(n: int) -> int:
-    """O(n^3): recorre una matriz tridimensional."""
+    """Cuenta operaciones de un algoritmo O(n^3).
+
+    Usa tres ciclos anidados para simular el recorrido de una estructura
+    tridimensional.
+
+    Args:
+        n: Tamano de la entrada.
+
+    Returns:
+        Cantidad de posiciones visitadas, igual a n^3.
+    """
+
     operations = 0
     for _ in range(n):
         for _ in range(n):
@@ -70,10 +147,23 @@ def algorithm_cubic(n: int) -> int:
 
 
 def algorithm_power_ten(n: int) -> int:
-    """O(n^10): genera todas las tuplas de longitud 10 con valores 0..n-1."""
+    """Cuenta operaciones de un algoritmo O(n^10).
+
+    Genera conceptualmente todas las tuplas de longitud 10. Cada posicion de
+    la tupla puede tomar n valores diferentes.
+
+    Args:
+        n: Cantidad de valores posibles para cada posicion de la tupla.
+
+    Returns:
+        Cantidad de tuplas generadas, igual a n^10.
+    """
+
     operations = 0
 
     def visit(depth: int) -> None:
+        """Avanza recursivamente hasta completar una tupla de longitud 10."""
+
         nonlocal operations
         if depth == 10:
             operations += 1
@@ -86,7 +176,17 @@ def algorithm_power_ten(n: int) -> int:
 
 
 def algorithm_factorial(n: int) -> int:
-    """O(n!): genera todas las permutaciones de n elementos."""
+    """Cuenta operaciones de un algoritmo O(n!).
+
+    Recorre todas las permutaciones posibles de los elementos 0..n-1.
+
+    Args:
+        n: Cantidad de elementos a permutar.
+
+    Returns:
+        Cantidad de permutaciones generadas, igual a n!.
+    """
+
     operations = 0
     for _ in permutations(range(n)):
         operations += 1
@@ -94,7 +194,18 @@ def algorithm_factorial(n: int) -> int:
 
 
 def algorithm_exponential(n: int) -> int:
-    """O(2^n): genera todos los subconjuntos mediante mascaras de bits."""
+    """Cuenta operaciones de un algoritmo O(2^n).
+
+    Simula la generacion de todos los subconjuntos posibles. Cada subconjunto
+    se representa con una mascara de bits.
+
+    Args:
+        n: Cantidad de elementos del conjunto original.
+
+    Returns:
+        Cantidad de subconjuntos posibles, igual a 2^n.
+    """
+
     operations = 0
     for _ in range(1 << n):
         operations += 1
@@ -102,9 +213,20 @@ def algorithm_exponential(n: int) -> int:
 
 
 def lg(n: int) -> int:
+    """Calcula el logaritmo base 2 entero usado como formula de referencia.
+
+    Args:
+        n: Valor de entrada.
+
+    Returns:
+        Parte entera de log2(n). Si n no es positivo, devuelve 0.
+    """
+
     return int(math.log2(n)) if n > 0 else 0
 
 
+# Lista central de experimentos. Cada entrada conecta:
+# complejidad, nombre del algoritmo, valores de n, funcion medida y formula.
 EXPERIMENTS: tuple[Experiment, ...] = (
     Experiment("O(lg n)", "Division sucesiva entre 2", (2, 4, 8, 16, 32, 64, 128), algorithm_logarithmic, lg),
     Experiment("O(n)", "Recorrido simple", (10, 100, 1_000, 5_000, 10_000), algorithm_linear, lambda n: n),
@@ -118,6 +240,14 @@ EXPERIMENTS: tuple[Experiment, ...] = (
 
 
 def run_experiments() -> list[dict[str, str]]:
+    """Ejecuta todos los experimentos definidos en EXPERIMENTS.
+
+    Returns:
+        Lista de diccionarios. Cada diccionario representa una fila de la
+        tabla final con complejidad, algoritmo, n, operaciones medidas,
+        formula esperada y razon operacion/formula.
+    """
+
     rows: list[dict[str, str]] = []
     for experiment in EXPERIMENTS:
         for n in experiment.values:
@@ -138,6 +268,15 @@ def run_experiments() -> list[dict[str, str]]:
 
 
 def format_table(rows: Iterable[dict[str, str]]) -> str:
+    """Convierte los resultados en una tabla de texto alineada.
+
+    Args:
+        rows: Filas generadas por run_experiments().
+
+    Returns:
+        Cadena de texto con encabezados, separador y filas alineadas.
+    """
+
     materialized = list(rows)
     headers = ["Complejidad", "Algoritmo", "n", "Operaciones medidas", "Formula esperada", "Operacion/formula"]
     widths = {
@@ -155,6 +294,17 @@ def format_table(rows: Iterable[dict[str, str]]) -> str:
 
 
 def save_csv(rows: Iterable[dict[str, str]], path: Path) -> None:
+    """Guarda los resultados en un archivo CSV.
+
+    Args:
+        rows: Filas generadas por run_experiments().
+        path: Ruta donde se escribira el archivo CSV.
+
+    Returns:
+        None. La funcion no devuelve datos; su efecto es crear o sobrescribir
+        el archivo indicado.
+    """
+
     materialized = list(rows)
     with path.open("w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=materialized[0].keys())
@@ -163,6 +313,16 @@ def save_csv(rows: Iterable[dict[str, str]], path: Path) -> None:
 
 
 def main() -> None:
+    """Punto de entrada del programa.
+
+    Lee argumentos de consola, ejecuta los experimentos, imprime la tabla y,
+    si corresponde, guarda los resultados en CSV y TXT.
+
+    Returns:
+        None. La salida visible del programa es la impresion en consola y los
+        archivos generados.
+    """
+
     parser = argparse.ArgumentParser(
         description="Proyecto 1: evidencia numerica de complejidades mediante conteo de operaciones."
     )
@@ -181,6 +341,7 @@ def main() -> None:
     print(table)
 
     if not args.no_guardar:
+        # Guarda los mismos datos en dos formatos: CSV estructurado y TXT legible.
         save_csv(rows, args.csv)
         args.txt.write_text(table + "\n", encoding="utf-8")
         print()

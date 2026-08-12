@@ -1,0 +1,368 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{margin=2.5cm}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!45!black,
+    urlcolor=blue!45!black
+}
+
+\lstdefinestyle{pythonstyle}{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue!60!black}\bfseries,
+    commentstyle=\color{green!35!black},
+    stringstyle=\color{orange!50!black},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{black!25},
+    tabsize=4,
+    numbers=left,
+    numberstyle=\tiny\color{black!45}
+}
+
+\lstdefinestyle{textstyle}{
+    basicstyle=\ttfamily\small,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{black!25}
+}
+
+\title{\textbf{Proyecto 1: Análisis de Complejidades Algorítmicas}}
+\author{Curso de Lógica}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento describe el funcionamiento del programa \texttt{proyecto1\_complejidades.py}, cuyo propósito es demostrar numéricamente el crecimiento de distintas complejidades algorítmicas mediante conteo explícito de operaciones. El proyecto compara las operaciones medidas por algoritmos representativos contra fórmulas teóricas para las complejidades $O(\lg n)$, $O(n)$, $O(n\lg n)$, $O(n^2)$, $O(n^3)$, $O(n^{10})$, $O(n!)$ y $O(2^n)$.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+El análisis de complejidad algorítmica permite estudiar cómo cambia el costo de un procedimiento cuando aumenta el tamaño de la entrada. En lugar de medir tiempo real de ejecución, este proyecto cuenta operaciones específicas realizadas por cada algoritmo. Esta decisión evita que los resultados dependan del equipo, del sistema operativo o de la carga del procesador.
+
+El programa implementado en Python ejecuta varios experimentos, cada uno asociado con una función de crecimiento. Para cada valor de entrada $n$, se calcula:
+
+\begin{itemize}
+    \item la cantidad de operaciones medidas por el algoritmo;
+    \item el valor de una fórmula teórica de referencia;
+    \item la razón entre operaciones medidas y fórmula esperada.
+\end{itemize}
+
+Cuando la razón es igual a $1.00$, el conteo implementado coincide exactamente con la fórmula usada como referencia.
+
+\section{Objetivos}
+
+\subsection{Objetivo general}
+
+Demostrar, mediante conteo numérico de operaciones, el comportamiento de crecimiento de diferentes clases de complejidad algorítmica.
+
+\subsection{Objetivos específicos}
+
+\begin{itemize}
+    \item Implementar algoritmos representativos para ocho órdenes de crecimiento.
+    \item Comparar el conteo obtenido con una fórmula matemática esperada.
+    \item Generar resultados en consola, archivo CSV y archivo de texto.
+    \item Interpretar las diferencias de crecimiento entre complejidades moderadas, polinomiales y de crecimiento acelerado.
+\end{itemize}
+
+\section{Estructura del proyecto}
+
+El repositorio contiene los siguientes archivos principales:
+
+\begin{longtable}{>{\ttfamily}p{0.36\textwidth} p{0.56\textwidth}}
+\toprule
+\normalfont Archivo & Descripción \\
+\midrule
+\endfirsthead
+\toprule
+\normalfont Archivo & Descripción \\
+\midrule
+\endhead
+proyecto1\_complejidades.py & Implementación principal. Define los algoritmos, ejecuta los experimentos, formatea la tabla y guarda los archivos de salida. \\
+resultados\_complejidades.csv & Resultados estructurados en formato CSV. Puede abrirse en una hoja de cálculo o procesarse posteriormente. \\
+salida\_ejemplo.txt & Copia de la tabla generada en consola. \\
+README.md & Documentación general del proyecto, instrucciones de ejecución e interpretación. \\
+\bottomrule
+\end{longtable}
+
+\section{Diseño del programa}
+
+El código utiliza una estructura de datos llamada \texttt{Experiment}, definida con \texttt{@dataclass(frozen=True)}. Esta clase representa cada experimento mediante cinco campos:
+
+\begin{longtable}{p{0.24\textwidth} p{0.68\textwidth}}
+\toprule
+Campo & Significado \\
+\midrule
+\endfirsthead
+\toprule
+Campo & Significado \\
+\midrule
+\endhead
+\texttt{complexity} & Notación de complejidad estudiada. \\
+\texttt{name} & Nombre del algoritmo representativo. \\
+\texttt{values} & Tupla de valores de entrada $n$ usados en el experimento. \\
+\texttt{algorithm} & Función que cuenta operaciones para un valor de $n$. \\
+\texttt{reference} & Fórmula teórica usada para comparar el resultado. \\
+\bottomrule
+\end{longtable}
+
+Esta estructura permite que todos los experimentos se ejecuten de manera uniforme. La función \texttt{run\_experiments()} recorre la colección \texttt{EXPERIMENTS}, ejecuta cada algoritmo con sus valores de entrada, calcula la fórmula esperada y genera una lista de filas con los resultados.
+
+\section{Complejidades implementadas}
+
+\subsection{Complejidad logarítmica: \texorpdfstring{$O(\lg n)$}{O(lg n)}}
+
+La función \texttt{algorithm\_logarithmic(n)} divide el problema entre $2$ mientras $n > 1$. Cada división cuenta como una operación:
+
+\[
+T(n) = \lg(n)
+\]
+
+Este comportamiento representa algoritmos que reducen el espacio de búsqueda a la mitad en cada paso, como la búsqueda binaria.
+
+\subsection{Complejidad lineal: \texorpdfstring{$O(n)$}{O(n)}}
+
+La función \texttt{algorithm\_linear(n)} recorre $n$ elementos una vez. Por cada iteración aumenta el contador:
+
+\[
+T(n) = n
+\]
+
+Este patrón aparece cuando un algoritmo debe inspeccionar todos los elementos de una entrada.
+
+\subsection{Complejidad lineal-logarítmica: \texorpdfstring{$O(n\lg n)$}{O(n lg n)}}
+
+La función \texttt{algorithm\_n\_log\_n(n)} simula una búsqueda binaria para cada uno de los $n$ elementos:
+
+\[
+T(n) = n\lg(n)
+\]
+
+Esta complejidad es común en algoritmos eficientes de ordenamiento, como mergesort y heapsort.
+
+\subsection{Complejidad cuadrática: \texorpdfstring{$O(n^2)$}{O(n2)}}
+
+La función \texttt{algorithm\_quadratic(n)} utiliza dos ciclos anidados para recorrer todos los pares ordenados:
+
+\[
+T(n) = n^2
+\]
+
+Este tipo de crecimiento aparece en comparaciones de todos contra todos.
+
+\subsection{Complejidad cúbica: \texorpdfstring{$O(n^3)$}{O(n3)}}
+
+La función \texttt{algorithm\_cubic(n)} utiliza tres ciclos anidados:
+
+\[
+T(n) = n^3
+\]
+
+Representa procedimientos sobre estructuras tridimensionales o algoritmos con tres niveles dependientes de entrada.
+
+\subsection{Complejidad polinomial alta: \texorpdfstring{$O(n^{10})$}{O(n10)}}
+
+La función \texttt{algorithm\_power\_ten(n)} usa recursión para generar todas las tuplas de longitud $10$ con valores entre $0$ y $n-1$:
+
+\[
+T(n) = n^{10}
+\]
+
+Aunque sigue siendo una complejidad polinomial, su crecimiento es muy rápido incluso para valores pequeños de $n$.
+
+\subsection{Complejidad factorial: \texorpdfstring{$O(n!)$}{O(n!)}}
+
+La función \texttt{algorithm\_factorial(n)} genera todas las permutaciones de $n$ elementos:
+
+\[
+T(n) = n!
+\]
+
+Este crecimiento se observa en problemas donde se evalúan todos los ordenamientos posibles.
+
+\subsection{Complejidad exponencial: \texorpdfstring{$O(2^n)$}{O(2n)}}
+
+La función \texttt{algorithm\_exponential(n)} genera todos los subconjuntos posibles mediante máscaras de bits:
+
+\[
+T(n) = 2^n
+\]
+
+Este patrón aparece en problemas donde cada elemento puede estar presente o ausente en una solución.
+
+\section{Metodología experimental}
+
+El procedimiento general del programa es el siguiente:
+
+\begin{enumerate}
+    \item Definir los experimentos en la tupla \texttt{EXPERIMENTS}.
+    \item Ejecutar cada algoritmo con los valores de $n$ definidos.
+    \item Contar las operaciones mediante variables acumuladoras.
+    \item Calcular el valor teórico correspondiente.
+    \item Guardar los resultados en una lista de diccionarios.
+    \item Formatear los resultados como tabla de texto.
+    \item Exportar la información a \texttt{resultados\_complejidades.csv} y \texttt{salida\_ejemplo.txt}.
+\end{enumerate}
+
+La comparación usa la razón:
+
+\[
+\text{Razón} = \frac{\text{operaciones medidas}}{\text{fórmula esperada}}
+\]
+
+En los datos generados por el proyecto, esta razón es $1.00$ para todos los casos, ya que cada algoritmo fue construido para coincidir con la fórmula de referencia.
+
+\section{Resultados}
+
+La Tabla~\ref{tab:resultados} muestra los resultados generados por el programa.
+
+\begin{figure}[htbp]
+    \centering
+    \IfFileExists{captura_resultados_codigo.png}{
+        \includegraphics[width=\textwidth]{captura_resultados_codigo.png}
+    }{
+        \fbox{\parbox{0.86\textwidth}{\centering
+        Falta el archivo \texttt{captura\_resultados\_codigo.png}.\\
+        Guardar la captura de resultados del codigo con ese nombre en la misma carpeta del archivo \texttt{.tex}.}}
+    }
+    \caption{Captura de resultados de codigo.}
+    \label{fig:captura-resultados-codigo}
+\end{figure}
+
+\begin{longtable}{p{0.16\textwidth} p{0.29\textwidth} r r r r}
+\caption{Resultados del conteo de operaciones.}
+\label{tab:resultados}\\
+\toprule
+Complejidad & Algoritmo & $n$ & Operaciones & Fórmula & Razón \\
+\midrule
+\endfirsthead
+\toprule
+Complejidad & Algoritmo & $n$ & Operaciones & Fórmula & Razón \\
+\midrule
+\endhead
+$O(\lg n)$ & División sucesiva entre 2 & 2 & 1 & 1 & 1.00 \\
+$O(\lg n)$ & División sucesiva entre 2 & 4 & 2 & 2 & 1.00 \\
+$O(\lg n)$ & División sucesiva entre 2 & 8 & 3 & 3 & 1.00 \\
+$O(\lg n)$ & División sucesiva entre 2 & 16 & 4 & 4 & 1.00 \\
+$O(\lg n)$ & División sucesiva entre 2 & 32 & 5 & 5 & 1.00 \\
+$O(\lg n)$ & División sucesiva entre 2 & 64 & 6 & 6 & 1.00 \\
+$O(\lg n)$ & División sucesiva entre 2 & 128 & 7 & 7 & 1.00 \\
+$O(n)$ & Recorrido simple & 10 & 10 & 10 & 1.00 \\
+$O(n)$ & Recorrido simple & 100 & 100 & 100 & 1.00 \\
+$O(n)$ & Recorrido simple & 1000 & 1000 & 1000 & 1.00 \\
+$O(n)$ & Recorrido simple & 5000 & 5000 & 5000 & 1.00 \\
+$O(n)$ & Recorrido simple & 10000 & 10000 & 10000 & 1.00 \\
+$O(n\lg n)$ & $n$ búsquedas binarias simuladas & 8 & 24 & 24 & 1.00 \\
+$O(n\lg n)$ & $n$ búsquedas binarias simuladas & 16 & 64 & 64 & 1.00 \\
+$O(n\lg n)$ & $n$ búsquedas binarias simuladas & 32 & 160 & 160 & 1.00 \\
+$O(n\lg n)$ & $n$ búsquedas binarias simuladas & 64 & 384 & 384 & 1.00 \\
+$O(n\lg n)$ & $n$ búsquedas binarias simuladas & 128 & 896 & 896 & 1.00 \\
+$O(n\lg n)$ & $n$ búsquedas binarias simuladas & 256 & 2048 & 2048 & 1.00 \\
+$O(n^2)$ & Pares ordenados & 10 & 100 & 100 & 1.00 \\
+$O(n^2)$ & Pares ordenados & 20 & 400 & 400 & 1.00 \\
+$O(n^2)$ & Pares ordenados & 50 & 2500 & 2500 & 1.00 \\
+$O(n^2)$ & Pares ordenados & 100 & 10000 & 10000 & 1.00 \\
+$O(n^2)$ & Pares ordenados & 200 & 40000 & 40000 & 1.00 \\
+$O(n^3)$ & Matriz tridimensional & 5 & 125 & 125 & 1.00 \\
+$O(n^3)$ & Matriz tridimensional & 10 & 1000 & 1000 & 1.00 \\
+$O(n^3)$ & Matriz tridimensional & 20 & 8000 & 8000 & 1.00 \\
+$O(n^3)$ & Matriz tridimensional & 30 & 27000 & 27000 & 1.00 \\
+$O(n^3)$ & Matriz tridimensional & 40 & 64000 & 64000 & 1.00 \\
+$O(n^{10})$ & Tuplas de longitud 10 & 1 & 1 & 1 & 1.00 \\
+$O(n^{10})$ & Tuplas de longitud 10 & 2 & 1024 & 1024 & 1.00 \\
+$O(n^{10})$ & Tuplas de longitud 10 & 3 & 59049 & 59049 & 1.00 \\
+$O(n^{10})$ & Tuplas de longitud 10 & 4 & 1048576 & 1048576 & 1.00 \\
+$O(n!)$ & Permutaciones & 1 & 1 & 1 & 1.00 \\
+$O(n!)$ & Permutaciones & 2 & 2 & 2 & 1.00 \\
+$O(n!)$ & Permutaciones & 3 & 6 & 6 & 1.00 \\
+$O(n!)$ & Permutaciones & 4 & 24 & 24 & 1.00 \\
+$O(n!)$ & Permutaciones & 5 & 120 & 120 & 1.00 \\
+$O(n!)$ & Permutaciones & 6 & 720 & 720 & 1.00 \\
+$O(n!)$ & Permutaciones & 7 & 5040 & 5040 & 1.00 \\
+$O(n!)$ & Permutaciones & 8 & 40320 & 40320 & 1.00 \\
+$O(2^n)$ & Subconjuntos & 4 & 16 & 16 & 1.00 \\
+$O(2^n)$ & Subconjuntos & 8 & 256 & 256 & 1.00 \\
+$O(2^n)$ & Subconjuntos & 12 & 4096 & 4096 & 1.00 \\
+$O(2^n)$ & Subconjuntos & 16 & 65536 & 65536 & 1.00 \\
+$O(2^n)$ & Subconjuntos & 20 & 1048576 & 1048576 & 1.00 \\
+\bottomrule
+\end{longtable}
+
+\section{Interpretación}
+
+Los resultados muestran que las complejidades no crecen al mismo ritmo. Para entradas grandes, $O(\lg n)$, $O(n)$ y $O(n\lg n)$ mantienen un crecimiento moderado. En cambio, $O(n^2)$ y $O(n^3)$ crecen rápidamente por el uso de ciclos anidados.
+
+Las funciones $O(n^{10})$, $O(n!)$ y $O(2^n)$ aumentan de forma mucho más agresiva. Por esta razón, el programa usa valores de $n$ pequeños en esos experimentos. Por ejemplo, para $O(n^{10})$, pasar de $n=3$ a $n=4$ aumenta el conteo de $59049$ a $1048576$ operaciones.
+
+También se observa que todas las razones operación/fórmula son iguales a $1.00$. Esto confirma que los contadores implementados coinciden con las fórmulas de referencia seleccionadas.
+
+\section{Ejecución del programa}
+
+Para ejecutar el proyecto desde la raíz del repositorio se usa:
+
+\begin{lstlisting}[style=textstyle]
+python proyecto1_complejidades.py
+\end{lstlisting}
+
+El programa también permite cambiar las rutas de salida:
+
+\begin{lstlisting}[style=textstyle]
+python proyecto1_complejidades.py --csv datos/resultado.csv --txt datos/resultado.txt
+\end{lstlisting}
+
+Si solo se desea imprimir la tabla sin guardar archivos:
+
+\begin{lstlisting}[style=textstyle]
+python proyecto1_complejidades.py --no-guardar
+\end{lstlisting}
+
+\section{Conclusiones}
+
+El proyecto evidencia de forma práctica el comportamiento de distintas complejidades algorítmicas. Al contar operaciones en lugar de medir tiempo, la comparación se centra en el crecimiento matemático y no en factores externos de ejecución.
+
+La implementación confirma que cada algoritmo representativo coincide con su fórmula teórica. Además, los resultados permiten visualizar por qué las complejidades exponenciales, factoriales y polinomiales de grado alto se vuelven costosas rápidamente, incluso con entradas pequeñas.
+
+\appendix
+
+\section{Código fuente principal}
+
+El siguiente anexo referencia directamente el archivo \texttt{proyecto1\_complejidades.py}. Si el código cambia, este listado se actualiza al recompilar el documento.
+
+\lstinputlisting[style=pythonstyle,caption={Código fuente de \texttt{proyecto1\_complejidades.py}.}]{proyecto1_complejidades.py}
+
+\section{Resultados en CSV}
+
+El archivo \texttt{resultados\_complejidades.csv} contiene la salida estructurada del programa.
+
+\lstinputlisting[style=textstyle,caption={Contenido de \texttt{resultados\_complejidades.csv}.}]{resultados_complejidades.csv}
+
+\section{Salida de ejemplo}
+
+El archivo \texttt{salida\_ejemplo.txt} contiene la tabla generada en consola.
+
+\lstinputlisting[style=textstyle,caption={Contenido de \texttt{salida\_ejemplo.txt}.}]{salida_ejemplo.txt}
+
+\end{document}
